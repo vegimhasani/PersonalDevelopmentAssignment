@@ -1,4 +1,4 @@
-package com.vegimhasani.dott.common
+package com.vegimhasani.dott.maps.usecases
 
 import com.vegimhasani.dott.common.data.repository.FoursquareRepository
 import com.vegimhasani.dott.common.data.service.model.request.RequestModel

@@ -1,4 +1,4 @@
-package com.vegimhasani.dott.details
+package com.vegimhasani.dott.details.viewmodel
 
 import com.vegimhasani.dott.details.presentation.state.DetailsUiState
 import com.vegimhasani.dott.details.presentation.viewmodel.DetailsViewModel
