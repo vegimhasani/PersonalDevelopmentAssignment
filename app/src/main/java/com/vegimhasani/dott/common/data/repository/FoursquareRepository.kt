@@ -2,9 +2,9 @@ package com.vegimhasani.dott.common.data.repository
 
 import com.vegimhasani.dott.common.data.service.FoursquareService
 import com.vegimhasani.dott.common.data.service.model.request.RequestModel
-import com.vegimhasani.dott.common.data.service.model.response.FoursquareResponse
 import com.vegimhasani.dott.common.data.service.model.response.FoursquareResponseState
 import com.vegimhasani.dott.common.data.service.model.response.RestaurantModel
+import com.vegimhasani.dott.common.data.service.model.response.Venue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +24,7 @@ class FoursquareRepository @Inject constructor(
             )
             val body = response.body()
             if (response.isSuccessful && body != null) {
-                updateCache(body)
+                updateCache(body.response.venues)
                 FoursquareResponseState.Success(body)
             } else {
                 FoursquareResponseState.Error
@@ -34,11 +34,13 @@ class FoursquareRepository @Inject constructor(
         }
     }
 
-    private fun updateCache(body: FoursquareResponse) {
-        body.response.venues.forEach { venue ->
-            val restaurant =
-                RestaurantModel(venue.id, venue.name, venue.location.lat, venue.location.lng, venue.location.formattedAddress)
-            cachedRestaurants[venue.id] = restaurant
+    private fun updateCache(venues: List<Venue>) {
+        if (venues.isNotEmpty()) {
+            venues.forEach { venue ->
+                val restaurant =
+                    RestaurantModel(venue.id, venue.name, venue.location.lat, venue.location.lng, venue.location.formattedAddress)
+                cachedRestaurants[venue.id] = restaurant
+            }
         }
     }
 
