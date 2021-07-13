@@ -54,7 +54,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-    private fun setMapInteractionTrackingListeners() {
+    private fun setMapInteractionListeners() {
         //initialise the variables before the camera move started
         var cameraPositionBeforeCameraMoveStarted = googleMap.cameraPosition
         var cameraChangeReason = REASON_DEVELOPER_ANIMATION
@@ -161,7 +161,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private fun init() {
         observeViewModel()
         checkUserPermissions()
-        setMapInteractionTrackingListeners()
+        setMapInteractionListeners()
     }
 
     private fun observeViewModel() {
@@ -181,10 +181,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun handleLocation(uiState: MapUiState.LocationRetrieved) {
-        updateView(uiState)
-    }
-
-    private fun updateView(uiState: MapUiState.LocationRetrieved) {
         if (uiState.restaurants.isNotEmpty()) {
             addMarkers(uiState.restaurants)
         } else {
