@@ -61,6 +61,7 @@ class FoursquareRepositoryTest {
                     any(),
                     any(),
                     any(),
+                    any(),
                     any()
                 )
             ).thenReturn(retrofitResponse)

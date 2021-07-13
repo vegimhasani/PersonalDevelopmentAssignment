@@ -13,6 +13,7 @@ interface FoursquareService {
         @Query("client_id") clientId: String,
         @Query("client_secret") clientSecret: String,
         @Query("ll") latLng: LatitudeLongitudeRequest,
+        @Query("radius") radius: String,
         @Query("v") versionNumber: String,
         @Query("categoryId") categoryId: String,
     ): Response<FoursquareResponse>

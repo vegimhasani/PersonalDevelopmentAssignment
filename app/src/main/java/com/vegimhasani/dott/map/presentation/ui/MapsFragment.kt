@@ -50,9 +50,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
 
     private fun requestNewLocationData(latLng: LatLng) {
-        mapsViewModel.onLocationRetrieved(latLng, googleMap.projection.visibleRegion.latLngBounds)
+        mapsViewModel.onLocationRetrieved(latLng)
     }
 
+    private fun loadMoreData(latLng: LatLng) {
+        mapsViewModel.loadMoreData(latLng, googleMap.projection.visibleRegion)
+    }
 
     private fun setMapInteractionListeners() {
         //initialise the variables before the camera move started
@@ -89,19 +92,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 if (googleMap.cameraPosition.bearing == cameraPositionBeforeCameraMoveStarted.bearing && googleMap.cameraPosition.target != cameraPositionBeforeCameraMoveStarted.target
                     && !isZoomInOrOutStarted
                 ) {
-                    requestNewLocationData(googleMap.cameraPosition.target)
+                    loadMoreData(googleMap.cameraPosition.target)
                 }
 
                 // track when the user ends the zoom in
                 if (googleMap.cameraPosition.zoom > cameraPositionBeforeCameraMoveStarted.zoom && isZoomInStarted) {
                     isZoomInStarted = false
-                    requestNewLocationData(googleMap.cameraPosition.target)
+                    loadMoreData(googleMap.cameraPosition.target)
                 }
 
                 // track when the user ends the zoom out
                 if (googleMap.cameraPosition.zoom < cameraPositionBeforeCameraMoveStarted.zoom && isZoomOutStarted) {
                     isZoomOutStarted = false
-                    requestNewLocationData(googleMap.cameraPosition.target)
+                    loadMoreData(googleMap.cameraPosition.target)
                 }
 
                 //reinitialise the  @cameraPosition and  @cameraChangeReason when the camera is idle

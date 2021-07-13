@@ -5,5 +5,6 @@ data class RequestModel(
     val clientID: String,
     val clientSecret: String,
     val version: String,
-    val categoryId: String
+    val categoryId: String,
+    val radius: String
 )

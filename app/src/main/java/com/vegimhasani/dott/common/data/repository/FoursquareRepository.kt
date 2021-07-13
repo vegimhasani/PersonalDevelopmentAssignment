@@ -20,7 +20,7 @@ class FoursquareRepository @Inject constructor(
 
         try {
             val response = service.getRestaurantsNearby(
-                request.clientID, request.clientSecret, request.latlng, request.version, request.categoryId
+                request.clientID, request.clientSecret, request.latlng, request.radius, request.version, request.categoryId,
             )
             val body = response.body()
             if (response.isSuccessful && body != null) {
