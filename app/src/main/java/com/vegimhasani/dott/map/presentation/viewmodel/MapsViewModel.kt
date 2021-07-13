@@ -26,16 +26,17 @@ class MapsViewModel @Inject constructor(
 
     val uiState: StateFlow<MapUiState> = _uiState
 
-    fun onLocationRetrieved(latLng: LatLng, latLngBounds: LatLngBounds) {
-        val cachedRestaurants = getNearbyRestaurants.getCachedRestaurants().values.filter {
-            latLngBounds.contains(LatLng(it.latitudeLongitude.lat, it.latitudeLongitude.lng))
+    fun onLocationRetrieved(userLocation: LatLng, latLngBounds: LatLngBounds) {
+        // First we check if there are restaurants in the cache that were load previously and their latitude and longitude is within the bounds of the users viewport
+        val cachedRestaurants = getNearbyRestaurants.getCachedRestaurants().values.filter { restaurant->
+            latLngBounds.contains(LatLng(restaurant.latitudeLongitude.lat, restaurant.latitudeLongitude.lng))
         }
         if (cachedRestaurants.isNotEmpty()) {
-            val latitudeLongitude = LatitudeLongitude(latLng.latitude, latLng.longitude)
+            val latitudeLongitude = LatitudeLongitude(userLocation.latitude, userLocation.longitude)
             val state = MapUiState.LocationRetrieved(latitudeLongitude, cachedRestaurants)
             _uiState.value = state
         } else {
-            fetchRemoteData(latLng)
+            fetchRemoteData(userLocation)
         }
     }
 
