@@ -59,7 +59,9 @@ class MapsViewModel @Inject constructor(
                 getNearbyRestaurants.getNearbyRestaurants(LatitudeLongitude(userLocation.latitude, userLocation.longitude), requestModel)) {
                 is UserNearbyRestaurantsState.Failed -> _uiState.value = MapUiState.Error
                 is UserNearbyRestaurantsState.Success -> {
-                    displayData(response.userNearbyRestaurants.latitudeLongitude, response.userNearbyRestaurants.restaurant)
+                    if (response.userNearbyRestaurants.restaurant.isNotEmpty()) {
+                        displayData(response.userNearbyRestaurants.latitudeLongitude, response.userNearbyRestaurants.restaurant)
+                    }
                 }
             }
         }
