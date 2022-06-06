@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DottAssignment</string>
+    <string name="app_name">LightyearAssignment</string>
     <string name="loading_message">Loading data..</string>
     <string name="error_message">Error occurred ..</string>
     <string name="details_message">Welcome to our restaurant</string>
