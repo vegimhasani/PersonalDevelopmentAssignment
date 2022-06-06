@@ -1,5 +1,5 @@
-# DottAssignment
- This is an technical assignment for a job interview at Dott.
+# LightyearAssignment
+ This is an technical assignment for a job interview at Lightyear.
  
  The app will display the restaurants at the user location and it will load more of them if the user pans the map.
 

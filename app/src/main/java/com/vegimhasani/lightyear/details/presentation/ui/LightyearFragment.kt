@@ -45,16 +45,8 @@ class LightyearFragment : Fragment() {
                     is DetailsUiState.Loading -> {
                         Toast.makeText(requireContext(), R.string.loading_message, Toast.LENGTH_SHORT).show()
                     }
-                    is DetailsUiState.DisplayDetailsData -> {
-                        updateUI(it.restaurant.name, it.restaurant.address)
-                    }
                 }
             }
         }
-    }
-
-    private fun updateUI(name: String, address: String?) {
-        fragmentLightyearBinding.restaurantName.text = name
-        fragmentLightyearBinding.restaurantAddress.text = address ?: resources.getString(R.string.details_address_not_available_message)
     }
 }
