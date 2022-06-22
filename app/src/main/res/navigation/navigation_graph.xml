@@ -3,25 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/mapsFragment">
+    app:startDestination="@id/lightyearFragment">
 
     <fragment
-        android:id="@+id/mapsFragment"
-        android:name="com.vegimhasani.dott.map.presentation.ui.MapsFragment"
-        android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps">
-        <action
-            android:id="@+id/navigate_to_details_action"
-            app:destination="@id/detailsFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/detailsFragment"
-        android:name="com.vegimhasani.dott.details.presentation.ui.DetailsFragment"
+        android:id="@+id/lightyearFragment"
+        android:name="com.vegimhasani.lightyear.ui.LightyearFragment"
         android:label="fragment_details"
-        tools:layout="@layout/fragment_details">
-        <argument
-            android:name="restaurant_id"
-            app:argType="string" />
+        tools:layout="@layout/fragment_lightyear">
     </fragment>
 </navigation>

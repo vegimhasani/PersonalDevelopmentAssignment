@@ -1,0 +1,44 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+    <variable
+        name="viewmodel"
+        type="com.vegimhasani.lightyear.viewmodel.LightyearViewModel" />
+</data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/restaurant_message"
+            android:layout_width="wrap_content"
+            android:textAppearance="?textAppearanceHeadline5"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/details_message"
+            />
+
+        <TextView
+            android:id="@+id/restaurant_name"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"
+            android:textAppearance="?textAppearanceBody1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/restaurant_address"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"
+            android:textAppearance="?textAppearanceBody2"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:text="@string/details_message"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+</layout>

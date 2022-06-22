@@ -8,16 +8,6 @@ plugins {
 }
 
 android {
-    def apiKeysPropsFile = file('apikeys.properties')
-    Properties apiKeysProps = new Properties()
-
-    if (apiKeysPropsFile.canRead()) {
-        apiKeysProps.load(new FileInputStream(apiKeysPropsFile))
-    }
-    def clientID = apiKeysProps['FOURSQUARE_CLIENT_ID']
-    def clientSecret = apiKeysProps['FOURSQUARE_CLIENT_SECRET']
-    def foursquareVersion = apiKeysProps['FOURSQUARE_VERSION']
-
 
     compileSdkVersion 30
 
@@ -29,10 +19,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // should correspond to key/value pairs inside the file
-        buildConfigField("String", "FOURSQUARE_CLIENT_ID", clientID)
-        buildConfigField("String", "FOURSQUARE_CLIENT_SECRET", clientSecret)
-        buildConfigField("String", "FOURSQUARE_VERSION", foursquareVersion)
 
     }
 
