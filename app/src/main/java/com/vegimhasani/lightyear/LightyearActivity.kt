@@ -8,6 +8,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class LightyearActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dott)
+        setContentView(R.layout.activity_lightyear)
     }
 }
