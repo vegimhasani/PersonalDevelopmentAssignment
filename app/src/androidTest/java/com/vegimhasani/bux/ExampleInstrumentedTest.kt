@@ -1,4 +1,4 @@
-package com.vegimhasani.lightyear
+package com.vegimhasani.bux
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
