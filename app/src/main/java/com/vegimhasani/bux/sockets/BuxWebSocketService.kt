@@ -3,8 +3,8 @@ package com.vegimhasani.bux.sockets
 import com.tinder.scarlet.WebSocket
 import com.tinder.scarlet.ws.Receive
 import com.tinder.scarlet.ws.Send
-import com.vegimhasani.bux.sockets.models.PriceChange
 import com.vegimhasani.bux.sockets.models.Subscribe
+import com.vegimhasani.bux.sockets.models.WebSocketResponseBody
 import kotlinx.coroutines.flow.Flow
 
 interface BuxWebSocketService {
@@ -14,7 +14,4 @@ interface BuxWebSocketService {
 
     @Send
     fun sendSubscribe(subscribe: Subscribe)
-
-    @Receive
-    fun observePriceChange(): Flow<PriceChange>
 }

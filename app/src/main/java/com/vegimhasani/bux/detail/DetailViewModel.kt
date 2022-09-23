@@ -1,10 +1,13 @@
 package com.vegimhasani.bux.detail
 
 import androidx.lifecycle.*
+import com.google.gson.Gson
+import com.tinder.scarlet.Message
 import com.tinder.scarlet.WebSocket
 import com.vegimhasani.bux.sockets.BuxApiService
 import com.vegimhasani.bux.sockets.BuxWebSocketService
 import com.vegimhasani.bux.sockets.models.Subscribe
+import com.vegimhasani.bux.sockets.models.WebSocketResponseBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -26,6 +29,7 @@ class DetailViewModel @Inject constructor(
 
     init {
         getProductDetails()
+        listenToWebSocket()
     }
 
     private fun getProductDetails() {
@@ -34,31 +38,37 @@ class DetailViewModel @Inject constructor(
                 val response = apiService.getProductDetails(it)
                 if (response.isSuccessful) {
                     val productsResponse = response.body()
-                    productsResponse?.securityId?.let { productId -> listenToWebSocket(productId) }
                 }
             }
         }
     }
 
-    private fun listenToWebSocket(productId: String) {
+    private fun listenToWebSocket() {
         webSocketService.observeWebSocket()
             .flowOn(Dispatchers.IO)
             .onEach { event ->
-                if (event is WebSocket.Event.OnConnectionOpened<*>) {
-                    webSocketService.sendSubscribe(
-                        Subscribe(
-                            subscribeTo = listOf(productId),
-                            unsubscribeFrom = emptyList()
-                        )
-                    )
+                if (event is WebSocket.Event.OnMessageReceived) {
+                    when (event.message) {
+                        is Message.Text -> {
+                            val webSocketResponseBody = Gson().fromJson((event.message as Message.Text).value, WebSocketResponseBody::class.java)
+                            if (webSocketResponseBody.t == "connect.connected"){
+                                 subscribeToWebSocket()
+                            }
+                        }
+                    }
                 }
             }
             .launchIn(viewModelScope)
-        webSocketService.observePriceChange()
-            .flowOn(Dispatchers.IO)
-            .onEach {
-                _state.postValue(DetailsState.PriceChange)
-            }
-            .launchIn(viewModelScope)
     }
+
+    private fun subscribeToWebSocket() {
+        savedStateHandle.get<String>(PRODUCT_ID)?.let {
+            webSocketService.sendSubscribe(
+                Subscribe(
+                    subscribeTo = listOf("trading.product.{$it}")
+                )
+            )
+        }
+    }
+
 }
