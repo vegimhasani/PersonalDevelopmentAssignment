@@ -10,7 +10,7 @@ import com.vegimhasani.bux.utils.Products
 
 class ProductsAdapter(clickListener: (String) -> Unit) : RecyclerView.Adapter<ProductsAdapter.PriceViewHolder>() {
 
-    val itemClickListener = clickListener
+    private val itemClickListener = clickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PriceViewHolder {
         return PriceViewHolder.newInstance(parent).listen { pos, _ ->
