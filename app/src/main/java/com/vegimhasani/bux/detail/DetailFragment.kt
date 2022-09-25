@@ -7,19 +7,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.vegimhasani.bux.databinding.DetailFragmentBinding
-import com.vegimhasani.bux.main.MainState
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val PRODUCT_ID = "PRODUCT_ID"
+const val PRODUCT_ID = "PRODUCT_ID"
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
-
-    private val productId: String by lazy {
-        checkNotNull(arguments?.getString(PRODUCT_ID)) { "Product ID must be provided" }
-    }
 
     companion object {
         fun newInstance(productId: String) = DetailFragment().apply {
@@ -47,8 +41,15 @@ class DetailFragment : Fragment() {
                 is DetailsState.PriceChange -> {
                     updateData()
                 }
+                is DetailsState.ConnectionState -> {
+                    displayMessage(it.message)
+                }
             }
         }
+    }
+
+    private fun displayMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun updateData() {

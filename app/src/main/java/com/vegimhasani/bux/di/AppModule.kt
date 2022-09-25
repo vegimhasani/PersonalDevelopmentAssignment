@@ -73,7 +73,7 @@ class AppModule {
         return Scarlet.Builder()
             .webSocketFactory(client.newWebSocketFactory("https://rtf.beta.getbux.com/subscriptions/me"))
             .addMessageAdapterFactory(MoshiMessageAdapter.Factory(moshi))
-            .addStreamAdapterFactory(FlowStreamAdapter.Factory())
+            .addStreamAdapterFactory(FlowStreamAdapter.Factory)
             .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
             .build()
     }

@@ -9,14 +9,10 @@ import com.vegimhasani.bux.sockets.BuxWebSocketService
 import com.vegimhasani.bux.sockets.models.Subscribe
 import com.vegimhasani.bux.sockets.models.WebSocketResponseBody
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val PRODUCT_ID = "PRODUCT_ID"
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
@@ -26,49 +22,72 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableLiveData<DetailsState>()
     val state: LiveData<DetailsState> = _state
+    private val productId = savedStateHandle.get<String>(PRODUCT_ID)
 
     init {
         getProductDetails()
-        listenToWebSocket()
+        initWebSocket()
     }
 
     private fun getProductDetails() {
         viewModelScope.launch {
-            savedStateHandle.get<String>(PRODUCT_ID)?.let {
-                val response = apiService.getProductDetails(it)
+            productId?.let {
+                val response = apiService.getProductDetails(productId)
                 if (response.isSuccessful) {
-                    val productsResponse = response.body()
+                    subscribeToWebSocket()
+                   // Display data of the details
                 }
             }
         }
     }
 
-    private fun listenToWebSocket() {
-        webSocketService.observeWebSocket()
-            .flowOn(Dispatchers.IO)
-            .onEach { event ->
-                if (event is WebSocket.Event.OnMessageReceived) {
-                    when (event.message) {
-                        is Message.Text -> {
-                            val webSocketResponseBody = Gson().fromJson((event.message as Message.Text).value, WebSocketResponseBody::class.java)
-                            if (webSocketResponseBody.t == "connect.connected"){
-                                 subscribeToWebSocket()
-                            }
-                        }
-                    }
+    private fun initWebSocket() {
+        viewModelScope.launch {
+            webSocketService.observeWebSocket().collect {
+                onReceiveResponseConnection(it)
+            }
+        }
+    }
+
+    private fun onReceiveResponseConnection(response: WebSocket.Event) {
+        when (response) {
+            is WebSocket.Event.OnConnectionOpened<*> -> {
+                _state.postValue(DetailsState.ConnectionState("connection opened"))
+            }
+            is WebSocket.Event.OnConnectionClosed -> {
+                _state.postValue(DetailsState.ConnectionState("connection closed"))
+            }
+            is WebSocket.Event.OnConnectionClosing -> {
+                _state.postValue(DetailsState.ConnectionState("closing connection.."))
+            }
+            is WebSocket.Event.OnConnectionFailed -> {
+                _state.postValue(DetailsState.ConnectionState("connection failed"))
+            }
+            is WebSocket.Event.OnMessageReceived -> {
+                handleOnMessageReceived(response.message)
+            }
+        }
+    }
+
+    private fun handleOnMessageReceived(message: Message) {
+        when (message) {
+            is Message.Text -> {
+                val webSocketResponseBody = Gson().fromJson(message.value, WebSocketResponseBody::class.java)
+                if (webSocketResponseBody.t == "connect.connected") {
+                    // Update the price value"
                 }
             }
-            .launchIn(viewModelScope)
+            is Message.Bytes -> {
+                _state.postValue(DetailsState.ConnectionState("unexpected message"))
+            }
+        }
     }
 
     private fun subscribeToWebSocket() {
-        savedStateHandle.get<String>(PRODUCT_ID)?.let {
-            webSocketService.sendSubscribe(
-                Subscribe(
-                    subscribeTo = listOf("trading.product.{$it}")
-                )
+        webSocketService.sendSubscribe(
+            Subscribe(
+                subscribeTo = listOf("trading.product.{$productId}")
             )
-        }
+        )
     }
-
 }

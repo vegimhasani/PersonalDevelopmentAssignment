@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import java.lang.reflect.Type
 
 class FlowStreamAdapter<T> : StreamAdapter<T, Flow<T>> {
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun adapt(stream: Stream<T>) = callbackFlow<T> {
         stream.start(object : Stream.Observer<T> {
             override fun onComplete() {
@@ -22,13 +21,13 @@ class FlowStreamAdapter<T> : StreamAdapter<T, Flow<T>> {
             }
 
             override fun onNext(data: T) {
-                if (!isClosedForSend) trySend(data).isSuccess
+                if (!isClosedForSend) offer(data)
             }
         })
         awaitClose {}
     }
 
-    class Factory : StreamAdapter.Factory {
+    object Factory : StreamAdapter.Factory {
         override fun create(type: Type): StreamAdapter<Any, Any> {
             return when (type.getRawType()) {
                 Flow::class.java -> FlowStreamAdapter()
