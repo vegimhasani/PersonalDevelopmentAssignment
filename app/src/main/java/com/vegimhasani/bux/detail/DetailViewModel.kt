@@ -9,6 +9,7 @@ import com.vegimhasani.bux.sockets.BuxWebSocketService
 import com.vegimhasani.bux.sockets.models.Subscribe
 import com.vegimhasani.bux.sockets.models.WebSocketResponseBody
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val apiService: BuxApiService,
     private val webSocketService: BuxWebSocketService,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableLiveData<DetailsState>()
     val state: LiveData<DetailsState> = _state
@@ -34,15 +35,14 @@ class DetailViewModel @Inject constructor(
             productId?.let {
                 val response = apiService.getProductDetails(productId)
                 if (response.isSuccessful) {
-                    subscribeToWebSocket()
-                   // Display data of the details
+                    // Display data of the details view
                 }
             }
         }
     }
 
     private fun initWebSocket() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             webSocketService.observeWebSocket().collect {
                 onReceiveResponseConnection(it)
             }
@@ -52,16 +52,16 @@ class DetailViewModel @Inject constructor(
     private fun onReceiveResponseConnection(response: WebSocket.Event) {
         when (response) {
             is WebSocket.Event.OnConnectionOpened<*> -> {
-                _state.postValue(DetailsState.ConnectionState("connection opened"))
+                _state.postValue(DetailsState.ConnectionState("Connection opened"))
             }
             is WebSocket.Event.OnConnectionClosed -> {
-                _state.postValue(DetailsState.ConnectionState("connection closed"))
+                _state.postValue(DetailsState.ConnectionState(response.shutdownReason.reason))
             }
             is WebSocket.Event.OnConnectionClosing -> {
-                _state.postValue(DetailsState.ConnectionState("closing connection.."))
+                _state.postValue(DetailsState.ConnectionState(response.shutdownReason.reason))
             }
             is WebSocket.Event.OnConnectionFailed -> {
-                _state.postValue(DetailsState.ConnectionState("connection failed"))
+                _state.postValue(DetailsState.ConnectionState("Connection failed"))
             }
             is WebSocket.Event.OnMessageReceived -> {
                 handleOnMessageReceived(response.message)
@@ -72,13 +72,25 @@ class DetailViewModel @Inject constructor(
     private fun handleOnMessageReceived(message: Message) {
         when (message) {
             is Message.Text -> {
-                val webSocketResponseBody = Gson().fromJson(message.value, WebSocketResponseBody::class.java)
-                if (webSocketResponseBody.t == "connect.connected") {
-                    // Update the price value"
-                }
+                handleTextMessage(message)
             }
             is Message.Bytes -> {
                 _state.postValue(DetailsState.ConnectionState("unexpected message"))
+            }
+        }
+    }
+
+    private fun handleTextMessage(message: Message.Text) {
+        val webSocketResponseBody = Gson().fromJson(message.value, WebSocketResponseBody::class.java)
+        when (webSocketResponseBody.t) {
+            "connect.connected" -> {
+                subscribeToWebSocket()
+            }
+            "trading.quote" -> {
+                // Update the real time price
+            }
+            else -> {
+                _state.postValue(DetailsState.ConnectionState("Unexpected event"))
             }
         }
     }

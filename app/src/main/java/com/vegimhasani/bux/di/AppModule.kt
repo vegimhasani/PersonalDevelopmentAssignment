@@ -44,11 +44,6 @@ class AppModule {
 
     @Provides
     fun provideBuxHttpClient(): OkHttpClient {
-        val logger = HttpLoggingInterceptor()
-            .setLevel(
-                if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC
-                else HttpLoggingInterceptor.Level.NONE
-            )
         val token = "eyJhbGciOiJIUzI1NiJ9." +
                 "eyJyZWZyZXNoYWJsZSI6ZmFsc2UsInN1YiI6ImJiMGNkYTJiLWExMGUtNGVkMy1hZDVhLTBm" +
                 "ODJiNGMxNTJjNCIsImF1ZCI6ImJldGEuZ2V0YnV4LmNvbSIsInNjcCI6WyJhcHA6bG9naW4i" +
@@ -57,7 +52,6 @@ class AppModule {
                 "MzkifQ.M5oANIi2nBtSfIfhyUMqJnex-JYg6Sm92KPYaUL9GKg"
 
         return OkHttpClient.Builder()
-            .addInterceptor(logger)
             .addInterceptor(Interceptor { chain ->
                 val newRequest: Request = chain.request().newBuilder()
                     .addHeader("Authorization", "Bearer $token")
@@ -69,12 +63,11 @@ class AppModule {
     }
 
     @Provides
-    fun provideScarlet(application: BuxApplication, client: OkHttpClient, moshi: Moshi): Scarlet {
+    fun provideScarlet(client: OkHttpClient, moshi: Moshi): Scarlet {
         return Scarlet.Builder()
             .webSocketFactory(client.newWebSocketFactory("https://rtf.beta.getbux.com/subscriptions/me"))
             .addMessageAdapterFactory(MoshiMessageAdapter.Factory(moshi))
             .addStreamAdapterFactory(FlowStreamAdapter.Factory)
-            .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
             .build()
     }
 
