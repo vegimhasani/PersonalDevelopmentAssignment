@@ -5,5 +5,5 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PriceBody(
-    @Json(name = "currentPrice") val currentPrice: String,
+    @Json(name = "currentPrice") val currentPrice: String?,
 )

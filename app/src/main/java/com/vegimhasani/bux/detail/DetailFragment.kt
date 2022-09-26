@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.vegimhasani.bux.databinding.DetailFragmentBinding
+import com.vegimhasani.bux.detail.models.ProductsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 const val PRODUCT_ID = "PRODUCT_ID"
@@ -23,7 +24,6 @@ class DetailFragment : Fragment() {
 
     private val viewModel by viewModels<DetailViewModel>()
 
-
     private lateinit var binding: DetailFragmentBinding
 
     override fun onCreateView(
@@ -38,21 +38,25 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is DetailsState.PriceChange -> {
-                    updateData()
-                }
                 is DetailsState.ConnectionState -> {
                     displayMessage(it.message)
                 }
+                is DetailsState.ProductDetails -> displayProductDetails(it.viewModel)
             }
         }
+        viewModel.priceUpdateState.observe(viewLifecycleOwner) {
+            binding.realTimeUpdatedPrice.text = it
+        }
+    }
+
+    private fun displayProductDetails(viewModel: ProductsViewModel) {
+        binding.productName.text = viewModel.displayName
+        binding.productCurrentPrice.text = viewModel.currentPriceFormatted
+        binding.productClosingPrice.text = viewModel.closingPriceFormatted
+        binding.productPercentageDifference.text = viewModel.percentageDifference
     }
 
     private fun displayMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun updateData() {
-        Toast.makeText(requireContext(), "Price updated", Toast.LENGTH_SHORT).show()
     }
 }

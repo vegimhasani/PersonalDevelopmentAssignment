@@ -1,10 +1,11 @@
 package com.vegimhasani.bux.detail.models
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-
+@JsonClass(generateAdapter = true)
 data class Price(
-    @SerializedName("currency") val currency: String,
-    @SerializedName("decimals") val decimals: Int,
-    @SerializedName("amount") val amount: String
+    @field:Json(name = "currency") val currency: String,
+    @field:Json(name = "decimals") val decimals: Int,
+    @field:Json(name = "amount") val amount: String
 )

@@ -1,9 +1,12 @@
 package com.vegimhasani.bux.detail
 
 import androidx.lifecycle.*
-import com.google.gson.Gson
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Message
 import com.tinder.scarlet.WebSocket
+import com.vegimhasani.bux.detail.models.ProductsResponse
+import com.vegimhasani.bux.detail.models.ProductsViewModel
 import com.vegimhasani.bux.sockets.BuxApiService
 import com.vegimhasani.bux.sockets.BuxWebSocketService
 import com.vegimhasani.bux.sockets.models.Subscribe
@@ -12,8 +15,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.MathContext
 import javax.inject.Inject
-
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
@@ -23,6 +27,8 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableLiveData<DetailsState>()
     val state: LiveData<DetailsState> = _state
+    private val _priceUpdateState = MutableLiveData<String>()
+    val priceUpdateState: LiveData<String> = _priceUpdateState
     private val productId = savedStateHandle.get<String>(PRODUCT_ID)
 
     init {
@@ -35,10 +41,29 @@ class DetailViewModel @Inject constructor(
             productId?.let {
                 val response = apiService.getProductDetails(productId)
                 if (response.isSuccessful) {
-                    // Display data of the details view
+                    val productsResponse = response.body()
+                    productsResponse?.let {
+                        // Display data of the details view
+                        _state.postValue(DetailsState.ProductDetails(toProductsViewModel(it)))
+                    }
                 }
             }
         }
+    }
+
+    private fun toProductsViewModel(response: ProductsResponse): ProductsViewModel {
+        val currentPrice = BigDecimal(response.currentPrice.amount)
+        val closingPrice = BigDecimal(response.closingPrice.amount)
+        return ProductsViewModel(
+            displayName = "Display name: ${response.displayName}",
+            currentPriceFormatted = "Current price: ${response.currentPrice.amount}",
+            closingPriceFormatted = "Closing price: ${response.closingPrice.amount}",
+            percentageDifference = "Percentage difference : ${percentageBetween(currentPrice, closingPrice)} %"
+        )
+    }
+
+    private fun percentageBetween(currentPrice: BigDecimal, closingPrice: BigDecimal): BigDecimal {
+        return currentPrice.subtract(closingPrice).divide(BigDecimal(100))
     }
 
     private fun initWebSocket() {
@@ -81,16 +106,17 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun handleTextMessage(message: Message.Text) {
-        val webSocketResponseBody = Gson().fromJson(message.value, WebSocketResponseBody::class.java)
-        when (webSocketResponseBody.t) {
+        val moshi = Moshi.Builder().build()
+        val jsonAdapter: JsonAdapter<WebSocketResponseBody> = moshi.adapter(WebSocketResponseBody::class.java)
+        val webSocketResponseBody = jsonAdapter.fromJson(message.value);
+        when (webSocketResponseBody?.t) {
             "connect.connected" -> {
                 subscribeToWebSocket()
             }
             "trading.quote" -> {
-                // Update the real time price
-            }
-            else -> {
-                _state.postValue(DetailsState.ConnectionState("Unexpected event"))
+                // Publish the real time price
+                val formattedRealTimePrice = "Real time price: ${webSocketResponseBody.body.currentPrice}"
+                _priceUpdateState.postValue(formattedRealTimePrice)
             }
         }
     }

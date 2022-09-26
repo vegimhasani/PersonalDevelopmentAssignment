@@ -1,11 +1,13 @@
 package com.vegimhasani.bux.detail.models
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class ProductsResponse(
-    @SerializedName("symbol") val symbol: String,
-    @SerializedName("securityId") val securityId: String,
-    @SerializedName("displayName") val displayName: String,
-    @SerializedName("currentPrice") val currentPrice: Price,
-    @SerializedName("closingPrice") val closingPrice: Price
+    @field:Json(name = "symbol") val symbol: String,
+    @field:Json(name = "securityId") val securityId: String,
+    @field:Json(name = "displayName") val displayName: String,
+    @field:Json(name = "currentPrice") val currentPrice: Price,
+    @field:Json(name = "closingPrice") val closingPrice: Price
 )

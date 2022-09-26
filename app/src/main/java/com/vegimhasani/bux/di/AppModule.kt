@@ -3,10 +3,8 @@ package com.vegimhasani.bux.di
 import android.content.Context
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Scarlet
-import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import com.tinder.scarlet.messageadapter.moshi.MoshiMessageAdapter
 import com.tinder.scarlet.websocket.okhttp.newWebSocketFactory
-import com.vegimhasani.bux.BuildConfig
 import com.vegimhasani.bux.BuxApplication
 import com.vegimhasani.bux.sockets.BuxApiService
 import com.vegimhasani.bux.sockets.BuxWebSocketService
@@ -19,9 +17,8 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 
@@ -74,7 +71,7 @@ class AppModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create())
         .baseUrl(BASE_BUX_URL)
         .client(okHttpClient)
         .build()
