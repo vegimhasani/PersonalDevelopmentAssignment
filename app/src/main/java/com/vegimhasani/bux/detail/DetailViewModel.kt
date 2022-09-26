@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.math.MathContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,8 +55,8 @@ class DetailViewModel @Inject constructor(
         val closingPrice = BigDecimal(response.closingPrice.amount)
         return ProductsViewModel(
             displayName = "Display name: ${response.displayName}",
-            currentPriceFormatted = "Current price: ${response.currentPrice.amount}",
-            closingPriceFormatted = "Closing price: ${response.closingPrice.amount}",
+            currentPriceFormatted = "Current price: ${response.currentPrice.amount} ${response.currentPrice.currency}",
+            closingPriceFormatted = "Closing price: ${response.closingPrice.amount} ${response.closingPrice.currency}",
             percentageDifference = "Percentage difference : ${percentageBetween(currentPrice, closingPrice)} %"
         )
     }
@@ -115,16 +114,21 @@ class DetailViewModel @Inject constructor(
             }
             "trading.quote" -> {
                 // Publish the real time price
-                val formattedRealTimePrice = "Real time price: ${webSocketResponseBody.body.currentPrice}"
-                _priceUpdateState.postValue(formattedRealTimePrice)
+                publishRealTimePrice(webSocketResponseBody.body.currentPrice)
+
             }
         }
+    }
+
+    private fun publishRealTimePrice(currentPrice: String?) {
+        val formattedRealTimePrice = "Real time price: $currentPrice"
+        _priceUpdateState.postValue(formattedRealTimePrice)
     }
 
     private fun subscribeToWebSocket() {
         webSocketService.sendSubscribe(
             Subscribe(
-                subscribeTo = listOf("trading.product.{$productId}")
+                subscribeTo = listOf("trading.product.$productId")
             )
         )
     }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.vegimhasani.bux.databinding.DetailFragmentBinding
@@ -32,6 +33,19 @@ class DetailFragment : Fragment() {
     ): View {
         binding = DetailFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateBack()
+            }
+        })
+    }
+
+    private fun navigateBack() {
+        requireActivity().supportFragmentManager.popBackStack()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

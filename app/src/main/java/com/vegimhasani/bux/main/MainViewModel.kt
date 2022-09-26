@@ -16,8 +16,4 @@ class MainViewModel @Inject constructor(
     init {
         _state.postValue(MainState.DisplayData)
     }
-
-    fun onProductClicked(productId: String) {
-        _state.postValue(MainState.NavigateToDetails(productId))
-    }
 }
