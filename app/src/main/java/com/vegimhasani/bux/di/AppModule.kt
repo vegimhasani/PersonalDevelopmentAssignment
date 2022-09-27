@@ -26,7 +26,9 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-    private val BASE_BUX_URL = "https://api.beta.getbux.com/core/27/"
+    private val BASE_BUX_API_URL = "https://api.beta.getbux.com/core/27/"
+
+    private val BASE_BUX_WEB_SOCKETS_URL = "https://rtf.beta.getbux.com/subscriptions/me"
 
     @Provides
     fun providesApplication(@ApplicationContext context: Context): BuxApplication {
@@ -62,7 +64,7 @@ class AppModule {
     @Provides
     fun provideScarlet(client: OkHttpClient, moshi: Moshi): Scarlet {
         return Scarlet.Builder()
-            .webSocketFactory(client.newWebSocketFactory("https://rtf.beta.getbux.com/subscriptions/me"))
+            .webSocketFactory(client.newWebSocketFactory(BASE_BUX_WEB_SOCKETS_URL))
             .addMessageAdapterFactory(MoshiMessageAdapter.Factory(moshi))
             .addStreamAdapterFactory(FlowStreamAdapter.Factory)
             .build()
@@ -72,7 +74,7 @@ class AppModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create())
-        .baseUrl(BASE_BUX_URL)
+        .baseUrl(BASE_BUX_API_URL)
         .client(okHttpClient)
         .build()
 

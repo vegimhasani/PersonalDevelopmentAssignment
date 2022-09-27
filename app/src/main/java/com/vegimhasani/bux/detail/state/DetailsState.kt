@@ -1,4 +1,4 @@
-package com.vegimhasani.bux.detail
+package com.vegimhasani.bux.detail.state
 
 import com.vegimhasani.bux.detail.models.ProductsViewModel
 

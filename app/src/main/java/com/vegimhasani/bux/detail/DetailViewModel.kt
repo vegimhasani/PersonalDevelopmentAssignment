@@ -7,6 +7,8 @@ import com.tinder.scarlet.Message
 import com.tinder.scarlet.WebSocket
 import com.vegimhasani.bux.detail.models.ProductsResponse
 import com.vegimhasani.bux.detail.models.ProductsViewModel
+import com.vegimhasani.bux.detail.state.ConnectionState
+import com.vegimhasani.bux.detail.state.DetailsState
 import com.vegimhasani.bux.sockets.BuxApiService
 import com.vegimhasani.bux.sockets.BuxWebSocketService
 import com.vegimhasani.bux.sockets.models.Subscribe

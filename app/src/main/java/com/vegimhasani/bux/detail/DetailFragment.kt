@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.vegimhasani.bux.databinding.DetailFragmentBinding
 import com.vegimhasani.bux.detail.models.ProductsViewModel
+import com.vegimhasani.bux.detail.state.DetailsState
 import dagger.hilt.android.AndroidEntryPoint
 
 const val PRODUCT_ID = "PRODUCT_ID"
