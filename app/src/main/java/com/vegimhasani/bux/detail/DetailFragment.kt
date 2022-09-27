@@ -50,13 +50,13 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.state.observe(viewLifecycleOwner) {
+        viewModel.detailsState.observe(viewLifecycleOwner) {
             when (it) {
-                is DetailsState.ConnectionState -> {
-                    displayMessage(it.message)
-                }
                 is DetailsState.ProductDetails -> displayProductDetails(it.viewModel)
             }
+        }
+        viewModel.connectionState.observe(viewLifecycleOwner) {
+            displayMessage(it.message)
         }
         viewModel.priceUpdateState.observe(viewLifecycleOwner) {
             binding.realTimeUpdatedPrice.text = it

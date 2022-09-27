@@ -13,7 +13,6 @@ import com.vegimhasani.bux.sockets.models.Subscribe
 import com.vegimhasani.bux.sockets.models.WebSocketResponseBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -24,8 +23,10 @@ class DetailViewModel @Inject constructor(
     private val webSocketService: BuxWebSocketService,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _state = MutableLiveData<DetailsState>()
-    val state: LiveData<DetailsState> = _state
+    private val _detailsState = MutableLiveData<DetailsState>()
+    val detailsState: LiveData<DetailsState> = _detailsState
+    private val _connectionState = MutableLiveData<ConnectionState>()
+    val connectionState: LiveData<ConnectionState> = _connectionState
     private val _priceUpdateState = MutableLiveData<String>()
     val priceUpdateState: LiveData<String> = _priceUpdateState
     private val productId = savedStateHandle.get<String>(PRODUCT_ID)
@@ -43,7 +44,7 @@ class DetailViewModel @Inject constructor(
                     val productsResponse = response.body()
                     productsResponse?.let {
                         // Display data of the details view
-                        _state.postValue(DetailsState.ProductDetails(toProductsViewModel(it)))
+                        _detailsState.postValue(DetailsState.ProductDetails(toProductsViewModel(it)))
                     }
                 }
             }
@@ -76,16 +77,16 @@ class DetailViewModel @Inject constructor(
     private fun onReceiveResponseConnection(response: WebSocket.Event) {
         when (response) {
             is WebSocket.Event.OnConnectionOpened<*> -> {
-                _state.postValue(DetailsState.ConnectionState("Connection opened"))
+                _connectionState.postValue(ConnectionState("Connection opened"))
             }
             is WebSocket.Event.OnConnectionClosed -> {
-                _state.postValue(DetailsState.ConnectionState(response.shutdownReason.reason))
+                _connectionState.postValue(ConnectionState(response.shutdownReason.reason))
             }
             is WebSocket.Event.OnConnectionClosing -> {
-                _state.postValue(DetailsState.ConnectionState(response.shutdownReason.reason))
+                _connectionState.postValue(ConnectionState(response.shutdownReason.reason))
             }
             is WebSocket.Event.OnConnectionFailed -> {
-                _state.postValue(DetailsState.ConnectionState("Connection failed"))
+                _connectionState.postValue(ConnectionState("Connection failed"))
             }
             is WebSocket.Event.OnMessageReceived -> {
                 handleOnMessageReceived(response.message)
@@ -99,7 +100,7 @@ class DetailViewModel @Inject constructor(
                 handleTextMessage(message)
             }
             is Message.Bytes -> {
-                _state.postValue(DetailsState.ConnectionState("unexpected message"))
+                _connectionState.postValue(ConnectionState("unexpected message"))
             }
         }
     }

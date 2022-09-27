@@ -3,12 +3,14 @@ package com.vegimhasani.bux.sockets
 import com.tinder.scarlet.Stream
 import com.tinder.scarlet.StreamAdapter
 import com.tinder.scarlet.utils.getRawType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.reflect.Type
 
 class FlowStreamAdapter<T> : StreamAdapter<T, Flow<T>> {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun adapt(stream: Stream<T>) = callbackFlow<T> {
         stream.start(object : Stream.Observer<T> {
             override fun onComplete() {
@@ -20,7 +22,7 @@ class FlowStreamAdapter<T> : StreamAdapter<T, Flow<T>> {
             }
 
             override fun onNext(data: T) {
-                if (!isClosedForSend) offer(data)
+                if (!isClosedForSend) trySend(data).isSuccess
             }
         })
         awaitClose {}
