@@ -1,8 +1,8 @@
-package com.vegimhasani.bux
+package com.vegimhasani.rabobank
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.vegimhasani.bux.main.MainFragment
+import com.vegimhasani.rabobank.main.MainFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,6 +1,6 @@
-package com.vegimhasani.bux
+package com.vegimhasani.rabobank
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
-class BuxApplication : Application()
+class RabobankApplication : Application()
