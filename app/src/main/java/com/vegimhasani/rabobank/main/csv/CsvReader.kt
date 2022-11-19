@@ -3,8 +3,6 @@ package com.vegimhasani.rabobank.main.csv
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.InputStream
 import javax.inject.Inject
 
