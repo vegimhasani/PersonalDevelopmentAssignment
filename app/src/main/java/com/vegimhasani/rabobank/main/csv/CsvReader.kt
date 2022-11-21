@@ -3,7 +3,6 @@ package com.vegimhasani.rabobank.main.csv
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
-import java.io.InputStream
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -14,7 +13,7 @@ class CsvReader @Inject constructor(private val call: Call) {
 
     suspend fun downloadAndParseCsvData(): CsvState = withContext(Dispatchers.IO) {
         val response = call.execute()
-        val csvData = response.body?.byteStream()?.let { readCsv(it) }
+        val csvData = response.body?.byteStream()?.bufferedReader()?.readLines()?.let { readCsv(it) }
         if (csvData.isNullOrEmpty()) {
             CsvState.Error
         } else {
@@ -22,12 +21,10 @@ class CsvReader @Inject constructor(private val call: Call) {
         }
     }
 
-    private fun readCsv(inputStream: InputStream): List<CsvFormattedData> {
-        val reader = inputStream.bufferedReader()
-        val header = reader.readLines()
-        return header
+    private fun readCsv(lines: List<String>): List<CsvFormattedData> {
+        return lines
             .filter { it.isNotBlank() }
-            .subList(1, header.size)
+            .subList(1, lines.size)
             .map {
                 val (firstName, lastName, _, dateOfBirth, _) = it.split(',', ignoreCase = false)
                 CsvData(firstName, lastName, dateOfBirth).formatCsvData()

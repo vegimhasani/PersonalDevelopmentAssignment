@@ -8,6 +8,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,5 +40,10 @@ class AppModule {
     @Provides
     fun providesCsvReader(call: Call): CsvReader {
         return CsvReader(call)
+    }
+
+    @Provides
+    fun providesCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.Main
     }
 }
