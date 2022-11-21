@@ -106,11 +106,11 @@ dependencies {
 
     // Test
 
-    def mockito_version = '4.9.0'
+    def mockkVersion = '1.13.2'
 
-    // For local unit tests on your development machine
-    testImplementation "org.mockito:mockito-core:$mockito_version"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "io.mockk:mockk:${mockkVersion}"
+    testImplementation "io.mockk:mockk-android:${mockkVersion}"
+
 
     testImplementation("junit:junit:4.13.2")
 
